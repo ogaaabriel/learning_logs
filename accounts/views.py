@@ -6,14 +6,14 @@ from . import forms
 
 def signup(request):
     if request.user.is_authenticated:
-        return redirect("index")
+        return redirect("learning_logs:topics")
 
     if request.method == "POST":
         form = forms.CustomUserCreationForm(data=request.POST)
         if form.is_valid():
             new_user = form.save()
             login(request, new_user)
-            return redirect("index")
+            return redirect("learning_logs:topics")
     else:
         form = forms.CustomUserCreationForm()
 

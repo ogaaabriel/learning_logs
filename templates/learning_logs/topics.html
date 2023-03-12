@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>
+        {% if public %}
+            Tópicos Públicos
+        {% else %}
+            Meus Tópicos
+        {% endif %}
+    </h1>
+
+    <div>
+        {% for topic in topics %}
+            <a href="{% if public %}{% url 'learning_logs:public_topic' topic.id %}{% else %}{% url 'learning_logs:topic' topic.id %}{% endif %}">{{ topic.title }}</a>
+        {% empty %}
+            <p>Ainda não há tópicos registrados</p>
+        {% endfor %}
+    </div>
+
+{% endblock %}
