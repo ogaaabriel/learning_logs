@@ -9,4 +9,7 @@ urlpatterns = [
     path("topicos_publicos/<int:topic_id>/", views.public_topic, name="public_topic"),
     path("meus_topicos/", views.topics, name="topics"),
     path("meus_topicos/<int:topic_id>/", views.topic, name="topic"),
+    path("adicionar_topico/", views.create_topic, name="create_topic"),
+    path("editar_topico/<int:topic_id>/", views.update_topic, name="update_topic"),
+    path("excluir_topico/<int:topic_id>/", views.delete_topic, name="delete_topic"),
 ]

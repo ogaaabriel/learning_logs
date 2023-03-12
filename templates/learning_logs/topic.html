@@ -8,6 +8,14 @@
             <div>
                 <p>Criado por: {{ topic.owner }}</p>
             </div>
+        {% else %}
+            <div>
+                <a href="{% url 'learning_logs:update_topic' topic.id %}">Editar Tópico</a>
+                <form action="{% url 'learning_logs:delete_topic' topic.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Excluir Tópico</button>
+                </form>
+            </div>
         {% endif %}
     </div>
 

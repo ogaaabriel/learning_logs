@@ -2,13 +2,14 @@
 
 {% block content %}
 
-    <h1>
+    <div>
         {% if public %}
-            Tópicos Públicos
+            <h1>Tópicos Públicos</h1>
         {% else %}
-            Meus Tópicos
+            <h1>Meus Tópicos</h1>
+            <a href="{% url 'learning_logs:create_topic' %}">Adicionar Tópico</a>
         {% endif %}
-    </h1>
+    </div>
 
     <div>
         {% for topic in topics %}
