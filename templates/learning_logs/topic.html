@@ -15,6 +15,7 @@
                     {% csrf_token %}
                     <button type="submit">Excluir Tópico</button>
                 </form>
+                <a href="{% url 'learning_logs:create_entry' topic.id %}">Adicionar Registro</a>
             </div>
         {% endif %}
     </div>
@@ -23,6 +24,15 @@
         {% for entry in entries %}
             <p>{{ entry.date_created|date }}</p>
             <p>{{ entry.content }}</p>
+            {% if not public %}
+                <div>
+                    <a href="{% url 'learning_logs:update_entry' entry.id %}">Editar Registro</a>
+                    <form action="{% url 'learning_logs:delete_entry' entry.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">Excluir Registro</button>
+                    </form>
+                </div>
+            {% endif %}
             <hr>
         {% empty %}
             <p>Ainda não há registros para esse tópico</p>

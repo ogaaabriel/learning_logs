@@ -88,3 +88,60 @@ def delete_topic(request, topic_id):
         return redirect("learning_logs:topics")
     else:
         raise Http404
+
+
+@login_required
+def create_entry(request, topic_id):
+    topic = get_object_or_404(models.Topic, owner=request.user, id=topic_id)
+
+    if request.method == "POST":
+        form = forms.EntryForm(data=request.POST)
+        if form.is_valid():
+            new_entry = form.save(commit=False)
+            new_entry.topic = topic
+            new_entry.save()
+            messages.success(request, "Registro adicionado com sucesso!")
+            return redirect("learning_logs:topic", topic_id=topic_id)
+    else:
+        form = forms.EntryForm()
+
+    context = {
+        "form": form,
+        "form_title": "Adicione um novo registro",
+        "btn_value": "Adicionar",
+    }
+    return render(request, "form.html", context)
+
+
+@login_required
+def update_entry(request, entry_id):
+    entry = get_object_or_404(models.Entry, topic__owner=request.user, id=entry_id)
+
+    if request.method == "POST":
+        form = forms.EntryForm(instance=entry, data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Registro editado com sucesso!")
+            return redirect("learning_logs:topic", topic_id=entry.topic.id)
+    else:
+        form = forms.EntryForm(instance=entry)
+
+    context = {
+        "form": form,
+        "form_title": "Editar registro",
+        "btn_value": "Salvar",
+    }
+    return render(request, "form.html", context)
+
+
+@login_required
+def delete_entry(request, entry_id):
+    entry = get_object_or_404(models.Entry, topic__owner=request.user, id=entry_id)
+    topic = entry.topic
+
+    if request.method == "POST":
+        entry.delete()
+        messages.success(request, "Registro excluído com sucesso!")
+        return redirect("learning_logs:topic", topic_id=topic.id)
+    else:
+        raise Http404
