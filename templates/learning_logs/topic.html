@@ -7,6 +7,10 @@
         {% if public %}
             <div>
                 <p>Criado por: {{ topic.owner }}</p>
+                <form action="{% url 'learning_logs:copy_topic' topic.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Copiar Tópico</button>
+                </form>
             </div>
         {% else %}
             <div>

@@ -91,6 +91,35 @@ def delete_topic(request, topic_id):
 
 
 @login_required
+def copy_topic(request, topic_id):
+    topic = get_object_or_404(models.Topic, public=True, id=topic_id)
+
+    if request.method != "POST":
+        raise Http404
+
+    title_exists = models.Topic.objects.filter(
+        title__iexact=topic.title, owner=request.user
+    ).exists()
+
+    if title_exists:
+        messages.error(request, "Você já possui um tópico com esse título!")
+    else:
+        topic.pk = None
+        topic.owner = request.user
+        topic.public = False
+        topic.save()
+
+        for entry in models.Entry.objects.filter(topic__id=topic_id):
+            entry.pk = None
+            entry.topic = topic
+            entry.save()
+
+        messages.success(request, "Tópico copiado com sucesso!")
+
+    return redirect("learning_logs:public_topic", topic_id=topic_id)
+
+
+@login_required
 def create_entry(request, topic_id):
     topic = get_object_or_404(models.Topic, owner=request.user, id=topic_id)
 
