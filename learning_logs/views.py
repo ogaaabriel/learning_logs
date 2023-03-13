@@ -3,26 +3,39 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import Http404
 
-from . import models, forms
+from . import models, forms, helpers
 
 
 def public_topics(request):
     topics = models.Topic.objects.filter(public=True)
-    context = {"topics": topics, "public": True}
+
+    search = request.GET.get("q", "")
+    if search:
+        topics = helpers.search_topics(search, topics)
+
+    topics_page = helpers.paginate(request, topics, 1)
+    context = {"topics": topics_page, "public": True, "search": search}
     return render(request, "learning_logs/topics.html", context)
 
 
 def public_topic(request, topic_id):
     topic = get_object_or_404(models.Topic, public=True, id=topic_id)
     entries = topic.entries.all()
-    context = {"topic": topic, "entries": entries, "public": True}
+    entries_page = helpers.paginate(request, entries, 1)
+    context = {"topic": topic, "entries": entries_page, "public": True}
     return render(request, "learning_logs/topic.html", context)
 
 
 @login_required
 def topics(request):
     topics = models.Topic.objects.filter(owner=request.user)
-    context = {"topics": topics}
+
+    search = request.GET.get("q", "")
+    if search:
+        topics = helpers.search_topics(search, topics)
+
+    topics_page = helpers.paginate(request, topics, 1)
+    context = {"topics": topics_page, "search": search}
     return render(request, "learning_logs/topics.html", context)
 
 
@@ -30,7 +43,8 @@ def topics(request):
 def topic(request, topic_id):
     topic = get_object_or_404(models.Topic, owner=request.user, id=topic_id)
     entries = topic.entries.all()
-    context = {"topic": topic, "entries": entries}
+    entries_page = helpers.paginate(request, entries, 1)
+    context = {"topic": topic, "entries": entries_page}
     return render(request, "learning_logs/topic.html", context)
 
 

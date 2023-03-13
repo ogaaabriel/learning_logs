@@ -12,11 +12,25 @@
     </div>
 
     <div>
+        <form method="get">
+            <input type="text" name="q" placeholder="Buscar tópico..." value="{{ search }}">
+        </form>
+    </div>
+
+    <div>
         {% for topic in topics %}
             <a href="{% if public %}{% url 'learning_logs:public_topic' topic.id %}{% else %}{% url 'learning_logs:topic' topic.id %}{% endif %}">{{ topic.title }}</a>
         {% empty %}
-            <p>Ainda não há tópicos registrados</p>
+            <p>
+                {% if search %}
+                    Não foram encontrados resultados para: "{{ search }}"
+                {% else %}
+                    Ainda não há tópicos registrados
+                {% endif %}
+            </p>
         {% endfor %}
     </div>
+
+    {% include 'pagination.html' with page_obj=topics %}
 
 {% endblock %}

@@ -1,0 +1,15 @@
+<div>
+    <span>
+        {% if page_obj.has_previous %}
+            <a href="?pagina={{ page_obj.previous_page_number }}{% if search %}&q={{ search }}{% endif %}">Anterior</a>
+        {% endif %}
+
+        <span>
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?pagina={{ page_obj.next_page_number }}{% if search %}&q={{ search }}{% endif %}">Próxima</a>
+        {% endif %}
+    </span>
+</div>
