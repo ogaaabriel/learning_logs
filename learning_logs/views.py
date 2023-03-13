@@ -13,7 +13,7 @@ def public_topics(request):
     if search:
         topics = helpers.search_topics(search, topics)
 
-    topics_page = helpers.paginate(request, topics, 1)
+    topics_page = helpers.paginate(request, topics)
     context = {"topics": topics_page, "public": True, "search": search}
     return render(request, "learning_logs/topics.html", context)
 
@@ -21,7 +21,7 @@ def public_topics(request):
 def public_topic(request, topic_id):
     topic = get_object_or_404(models.Topic, public=True, id=topic_id)
     entries = topic.entries.all()
-    entries_page = helpers.paginate(request, entries, 1)
+    entries_page = helpers.paginate(request, entries)
     context = {"topic": topic, "entries": entries_page, "public": True}
     return render(request, "learning_logs/topic.html", context)
 
@@ -34,7 +34,7 @@ def topics(request):
     if search:
         topics = helpers.search_topics(search, topics)
 
-    topics_page = helpers.paginate(request, topics, 1)
+    topics_page = helpers.paginate(request, topics)
     context = {"topics": topics_page, "search": search}
     return render(request, "learning_logs/topics.html", context)
 
@@ -43,7 +43,7 @@ def topics(request):
 def topic(request, topic_id):
     topic = get_object_or_404(models.Topic, owner=request.user, id=topic_id)
     entries = topic.entries.all()
-    entries_page = helpers.paginate(request, entries, 1)
+    entries_page = helpers.paginate(request, entries)
     context = {"topic": topic, "entries": entries_page}
     return render(request, "learning_logs/topic.html", context)
 

@@ -1,34 +1,38 @@
 {% extends 'base.html' %}
+{% load bootstrap_icons %}
 
 {% block content %}
 
-    <div>
-        {% if public %}
-            <h1>Tópicos Públicos</h1>
-        {% else %}
-            <h1>Meus Tópicos</h1>
-            <a href="{% url 'learning_logs:create_topic' %}">Adicionar Tópico</a>
-        {% endif %}
-    </div>
-
-    <div>
+    <div class="position-relative">
+        {% bs_icon 'search' extra_classes='text-secondary position-absolute translate-middle top-50 ms-4' %}
         <form method="get">
-            <input type="text" name="q" placeholder="Buscar tópico..." value="{{ search }}">
+            <input class="form-control p-3 rounded-pill ps-5 fs-5" type="text" name="q" placeholder="Buscar tópico..." value="{{ search }}">
         </form>
     </div>
 
-    <div>
-        {% for topic in topics %}
-            <a href="{% if public %}{% url 'learning_logs:public_topic' topic.id %}{% else %}{% url 'learning_logs:topic' topic.id %}{% endif %}">{{ topic.title }}</a>
-        {% empty %}
-            <p>
-                {% if search %}
-                    Não foram encontrados resultados para: "{{ search }}"
-                {% else %}
-                    Ainda não há tópicos registrados
-                {% endif %}
-            </p>
-        {% endfor %}
+    <div class="my-5">
+        <div class="d-flex align-items-center justify-content-end mb-3">
+            {% if not public %}
+                <a class="btn btn-primary" href="{% url 'learning_logs:create_topic' %}">Adicionar Tópico</a>
+            {% endif %}
+        </div>
+
+        <div class="list-group">
+            {% for topic in topics %}
+                <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center h5 m-0 py-3" href="{% if public %}{% url 'learning_logs:public_topic' topic.id %}{% else %}{% url 'learning_logs:topic' topic.id %}{% endif %}">
+                    <span>{{ topic.title }}</span>
+                    <span class="badge bg-primary rounded-pill">{{ topic.entries.count }}</span>
+                </a>
+            {% empty %}
+                <p class="alert alert-danger h5 m-0">
+                    {% if search %}
+                        Não foram encontrados resultados para: "{{ search }}"
+                    {% else %}
+                        Ainda não há tópicos registrados
+                    {% endif %}
+                </p>
+            {% endfor %}
+        </div>
     </div>
 
     {% include 'pagination.html' with page_obj=topics %}

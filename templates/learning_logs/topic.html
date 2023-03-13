@@ -1,45 +1,116 @@
 {% extends 'base.html' %}
+{% load bootstrap_icons %}
 
 {% block content %}
 
     <div>
-        <h1>{{ topic.title }}</h1>
-        {% if public %}
-            <div>
-                <p>Criado por: {{ topic.owner }}</p>
-                <form action="{% url 'learning_logs:copy_topic' topic.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit">Copiar Tópico</button>
-                </form>
-            </div>
-        {% else %}
-            <div>
-                <a href="{% url 'learning_logs:update_topic' topic.id %}">Editar Tópico</a>
-                <form action="{% url 'learning_logs:delete_topic' topic.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit">Excluir Tópico</button>
-                </form>
-                <a href="{% url 'learning_logs:create_entry' topic.id %}">Adicionar Registro</a>
-            </div>
-        {% endif %}
+        <h1 class="display-5">{{ topic.title }}</h1>
+        <div class="d-flex align-items-center gap-3">
+            {% if public %}
+                <p class="m-0 fs-5"><span class="fw-bold text-primary">Criado por: </span>{{ topic.owner }}</p>
+
+                <button type="button" class="btn btn-link m-0 p-0 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#topic{{ topic.id }}">
+                    {% bs_icon 'clipboard-fill' size='1.5em' %}
+                </button>
+                
+                <div class="modal fade" id="topic{{ topic.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                    Copiar o tópico "{{ topic.title|truncatechars:15 }}"?
+                                </h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-sm btn-dark" data-bs-dismiss="modal">Cancelar</button>
+                                <form action="{% url 'learning_logs:copy_topic' topic.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button class="btn btn-sm btn-danger" type="submit">Confirmar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{% url 'learning_logs:update_topic' topic.id %}">
+                    {% bs_icon 'pencil-square' size='1.5em' %}
+                </a>
+
+                <button type="button" class="btn btn-link m-0 p-0 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#topic{{ topic.id }}">
+                    {% bs_icon 'trash3-fill' size='1.5em' extra_classes='text-danger' %}
+                </button>
+                
+                <div class="modal fade" id="topic{{ topic.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                    Excluir o tópico "{{ topic.title|truncatechars:15 }}"?
+                                </h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-sm btn-dark" data-bs-dismiss="modal">Cancelar</button>
+                                <form action="{% url 'learning_logs:delete_topic' topic.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button class="btn btn-sm btn-danger" type="submit">Confirmar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="{% url 'learning_logs:create_entry' topic.id %}">
+                    {% bs_icon 'plus-lg' size='1.5em' %}
+                </a>
+            {% endif %}
+        </div>
     </div>
 
-    <div>
+    <div class="my-5">
         {% for entry in entries %}
-            <p>{{ entry.date_created|date }}</p>
-            <p>{{ entry.content }}</p>
-            {% if not public %}
-                <div>
-                    <a href="{% url 'learning_logs:update_entry' entry.id %}">Editar Registro</a>
-                    <form action="{% url 'learning_logs:delete_entry' entry.id %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit">Excluir Registro</button>
-                    </form>
-                </div>
-            {% endif %}
-            <hr>
+        <div class="card mb-4">
+            <div class="card-header d-flex flex-sm-row flex-column align-items-sm-center">
+                <p class="h5 m-0">{{ entry.date_created|date }}</p>
+                {% if not public %}
+                    <div class="d-flex align-items-center ms-sm-auto gap-2">
+                        <a href="{% url 'learning_logs:update_entry' entry.id %}">
+                            {% bs_icon 'pencil-square' size='1.25em' %}
+                        </a>
+
+                        <button type="button" class="btn btn-link m-0 p-0 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#entry{{ entry.id }}">
+                            {% bs_icon 'trash3-fill' size='1.25em' extra_classes='text-danger' %}
+                        </button>
+                        
+                        <div class="modal fade" id="entry{{ entry.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                            Excluir o registro "{{ entry.content|truncatechars:15 }}"?
+                                        </h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-sm btn-dark" data-bs-dismiss="modal">Cancelar</button>
+                                        <form action="{% url 'learning_logs:delete_entry' entry.id %}" method="post">
+                                            {% csrf_token %}
+                                            <button class="btn btn-sm btn-danger" type="submit">Confirmar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ entry.content }}</p>
+            </div>
+        </div>
         {% empty %}
-            <p>Ainda não há registros para esse tópico</p>
+            <p class="alert alert-danger h5 m-0">Ainda não há registros para esse tópico</p>
         {% endfor %}
     </div>
 
